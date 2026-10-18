@@ -1,49 +1,90 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Startseite</title>
+
   <style>
-    /* Grundlegendes Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* Reinweißer Hintergrund & Zentrierung des Inhalts */
     body {
       background-color: #ffffff;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden; /* Verhindert Scrollbalken */
+      overflow: hidden;
     }
 
-    /* Optimiertes Bild: groß, zentriert und voll responsive */
     .hero-image {
-      max-width: 85vw;    /* Nimmt auf großen Bildschirmen bis zu 85% der Breite ein */
-      max-height: 85vh;   /* Nimmt bis zu 85% der Höhe ein */
+      max-width: 85vw;
+      max-height: 85vh;
       width: auto;
       height: auto;
       object-fit: contain;
       display: block;
+      cursor: pointer;
     }
 
-    /* Optimierung für Mobilgeräte / Hochformat */
     @media (max-width: 768px) {
       .hero-image {
-        max-width: 92vw;  /* Nutzen auf dem Handy etwas mehr Platz */
+        max-width: 92vw;
         max-height: 92vh;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <img src="Monster_hüpfen.mp4" alt="Startseiten Bild" class="hero-image">
+  <!-- Normales Monsterbild -->
+  <img
+    id="monsterBild"
+    src="1792330313428.jpg"
+    alt="Monster"
+    class="hero-image"
+  >
+
+  <!-- Monsteranimation -->
+  <video
+    id="monsterVideo"
+    class="hero-image"
+    playsinline
+    preload="auto"
+    style="display: none;"
+  >
+    <source src="Monster_hüpfen.mp4" type="video/mp4">
+  </video>
+
+  <script>
+    const bild = document.getElementById("monsterBild");
+    const video = document.getElementById("monsterVideo");
+
+    function animationStarten() {
+      bild.style.display = "none";
+      video.style.display = "block";
+      video.currentTime = 0;
+
+      video.play().catch(() => {
+        video.style.display = "none";
+        bild.style.display = "block";
+      });
+    }
+
+    bild.addEventListener("click", animationStarten);
+
+    video.addEventListener("ended", function () {
+      video.style.display = "none";
+      bild.style.display = "block";
+      video.currentTime = 0;
+    });
+  </script>
 
 </body>
 </html>
