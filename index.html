@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -17,14 +16,26 @@
       background-color: #fbfbfb;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100vh;
     }
 
     .hero-image {
       max-width: 85vw;
-      max-height: 85vh;
+      max-height: 75vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -32,10 +43,31 @@
       cursor: pointer;
     }
 
+    /* Spruch-Anzeige */
+    #spruchBox {
+      position: absolute;
+      bottom: 4vh;
+      font-size: 1.2rem;
+      color: #333;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 10px 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      text-align: center;
+      max-width: 90vw;
+      pointer-events: none;
+    }
+
     @media (max-width: 768px) {
       .hero-image {
         max-width: 92vw;
-        max-height: 92vh;
+        max-height: 80vh;
+      }
+      #spruchBox {
+        font-size: 1rem;
+        bottom: 3vh;
       }
     }
   </style>
@@ -43,46 +75,165 @@
 
 <body>
 
-  <!-- Normales Monsterbild -->
-  <img
-    id="monsterBild"
-    src="1792330313428.jpg"
-    alt="Monster"
-    class="hero-image"
-  >
+  <div class="container">
+    <!-- Normales Monsterbild -->
+    <img
+      id="monsterBild"
+      src="1792330313428.jpg"
+      alt="Monster"
+      class="hero-image"
+    >
 
-  <!-- Monsteranimation -->
-  <video
-    id="monsterVideo"
-    class="hero-image"
-    playsinline
-    preload="auto"
-    style="display: none;"
-  >
-    <source src="Monster_hüpfen.mp4" type="video/mp4">
-  </video>
+    <!-- Monsteranimation -->
+    <video
+      id="monsterVideo"
+      class="hero-image"
+      playsinline
+      preload="auto"
+      style="display: none;"
+    ></video>
+
+    <!-- Audiosprech-Element (wird dynamisch gesteuert) -->
+    <audio id="monsterAudio" preload="auto"></audio>
+
+    <!-- Spruch Box -->
+    <div id="spruchBox"></div>
+  </div>
 
   <script>
     const bild = document.getElementById("monsterBild");
     const video = document.getElementById("monsterVideo");
+    const audio = document.getElementById("monsterAudio");
+    const spruchBox = document.getElementById("spruchBox");
+
+    // Liste aller Animationen (Namen ohne Endung)
+    const animationen = [
+      "blume", "drehen", "flirten", "gehen", "hallo", 
+      "handstand", "herz", "hüpfen", "kreis", "kuss", 
+      "lachen", "niesen", "posieren", "schweben", 
+      "seitensprünge", "singen", "stern", "tanzen", 
+      "verliebt", "zwinkern"
+    ];
+
+    // Liste aller Sprüche
+    const sprueche = [
+      "Du schaffst das",
+      "Glaub an dich",
+      "Vertrau auf dein Bauchgefühl",
+      "Du bist stärker",
+      "Bleib dir treu",
+      "Lade Scheli heute auf einen Kaffee ein",
+      "Du packst das",
+      "Mach es einfach",
+      "Mut steht dir gut",
+      "Deine Zeit ist jetzt",
+      "Kopf hoch Sini",
+      "Heute ist dein Tag",
+      "Glaub an deine Stärke",
+      "Schritt für Schritt",
+      "Ein Prost auf dich",
+      "Nutze deine Chance",
+      "Hol dir, was dir zusteht",
+      "Hör auf dein Herz Sini",
+      "Ein schöner Moment wartet",
+      "Glaub an deine Träume",
+      "Dein Lächeln wirkt Wunder",
+      "Gute Nachrichten nahen",
+      "Nimm das Geschenk an",
+      "Der Weg ist das Ziel",
+      "Lade Scheli heute auf ein Bierli ein",
+      "Überraschung naht",
+      "Die Sterne stehen gut",
+      "Offenheit bringt Glück",
+      "Bleib wie du bist Sini",
+      "Ein Wunsch geht in Erfüllung",
+      "Glaube an Wunder",
+      "Was wäre, wenn es klappt?",
+      "Neue Türen öffnen sich",
+      "Genieße den Augenblick",
+      "Lache herzlich heute",
+      "Heute strahlst du",
+      "Genieße die Stille",
+      "Sammle schöne Momente",
+      "Lass die Seele baumeln",
+      "Du hast dir heute ein Bier verdient",
+      "Du bist die coolste Socke hier",
+      "Heute ist dein offizieller Gönn-dir-Tag",
+      "Mach einfach mal nix – und das gründlich",
+      "Kalorien zählen heute nicht",
+      "Du bist absolut unersetzlich",
+      "Du siehst fantastisch aus",
+      "Es ist nie zu früh für Feierabend",
+      "Heute gibt's nix, Sini!",
+      "Heute hast du dir 2 Bier verdient",
+      "Lass es dir heute richtig gut gehen",
+      "Trau dich, Sini",
+      "Sei mutig und frech",
+      "Glück beginnt mit einem Lächeln",
+      "Ein bisschen Verrücktheit tut gut",
+      "Sini, worauf wartest du noch?",
+      "Heute ist der perfekte Tag für ein Prost",
+      "Dein Sofa vermisst dich schon",
+      "Erst Kaffee, dann die Welt retten",
+      "Du bist ein Original",
+      "Gute Freunde, gutes Bier, guter Tag!",
+      "Scheiß drauf, Sini!",
+      "Wer nicht wagt, der nicht gewinnt"
+    ];
 
     function animationStarten() {
+      // Zufälliges Video/Audio auswählen
+      const zufallsIndexAnim = Math.floor(Math.random() * animationen.length);
+      const wahl = animationen[zufallsIndexAnim];
+
+      // Zufälligen Spruch auswählen
+      const zufallsIndexSpruch = Math.floor(Math.random() * sprueche.length);
+      const spruch = sprueche[zufallsIndexSpruch];
+
+      // Quellen setzen
+      video.src = `Monster_${wahl}.mp4`;
+      audio.src = `Monster_${wahl}.mp3`;
+
+      // Spruch anzeigen
+      spruchBox.textContent = spruch;
+      spruchBox.style.opacity = "1";
+
+      // Bild verstecken, Video einblenden
       bild.style.display = "none";
       video.style.display = "block";
-      video.currentTime = 0;
 
-      video.play().catch(() => {
-        video.style.display = "none";
-        bild.style.display = "block";
-      });
+      video.currentTime = 0;
+      audio.currentTime = 0;
+
+      // Gleichzeitig abspielen
+      const playVideo = video.play();
+      const playAudio = audio.play();
+
+      if (playVideo !== undefined) {
+        playVideo.catch(() => {
+          resetAnsicht();
+        });
+      }
+      if (playAudio !== undefined) {
+        playAudio.catch(() => {
+          // Falls Audio blockiert wird, läuft das Video trotzdem stumm weiter
+        });
+      }
+    }
+
+    function resetAnsicht() {
+      video.style.display = "none";
+      bild.style.display = "block";
+      video.currentTime = 0;
+      audio.currentTime = 0;
+      // Spruch nach Ende des Videos langsam ausblenden (optional, hier bleibt er bis zum nächsten Klick stehen oder blendet aus)
     }
 
     bild.addEventListener("click", animationStarten);
 
+    // Wenn das Video zu Ende ist, zurück zum JPG
     video.addEventListener("ended", function () {
-      video.style.display = "none";
-      bild.style.display = "block";
-      video.currentTime = 0;
+      resetAnsicht();
     });
   </script>
 
