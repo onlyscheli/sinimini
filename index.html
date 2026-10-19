@@ -16,7 +16,6 @@
       background-color: #fbfbfb;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       overflow: hidden;
@@ -24,18 +23,32 @@
     }
 
     .container {
-      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
       height: 100vh;
+      padding: 20px;
+    }
+
+    /* Spruch über dem Monster */
+    #spruchBox {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #000000;
+      text-align: center;
+      margin-bottom: 20px;
+      min-height: 2.2em; /* Verhindert ein Verspringen des Bildes */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 90vw;
     }
 
     .hero-image {
       max-width: 85vw;
-      max-height: 75vh;
+      max-height: 70vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -43,31 +56,14 @@
       cursor: pointer;
     }
 
-    /* Spruch-Anzeige */
-    #spruchBox {
-      position: absolute;
-      bottom: 4vh;
-      font-size: 1.2rem;
-      color: #333;
-      background: rgba(255, 255, 255, 0.85);
-      padding: 10px 20px;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      text-align: center;
-      max-width: 90vw;
-      pointer-events: none;
-    }
-
     @media (max-width: 768px) {
+      #spruchBox {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+      }
       .hero-image {
         max-width: 92vw;
-        max-height: 80vh;
-      }
-      #spruchBox {
-        font-size: 1rem;
-        bottom: 3vh;
+        max-height: 75vh;
       }
     }
   </style>
@@ -76,6 +72,9 @@
 <body>
 
   <div class="container">
+    <!-- Spruch-Anzeige OBER DEM MONSTER -->
+    <div id="spruchBox"></div>
+
     <!-- Normales Monsterbild -->
     <img
       id="monsterBild"
@@ -93,11 +92,8 @@
       style="display: none;"
     ></video>
 
-    <!-- Audiosprech-Element (wird dynamisch gesteuert) -->
+    <!-- Audiosprech-Element -->
     <audio id="monsterAudio" preload="auto"></audio>
-
-    <!-- Spruch Box -->
-    <div id="spruchBox"></div>
   </div>
 
   <script>
@@ -106,7 +102,7 @@
     const audio = document.getElementById("monsterAudio");
     const spruchBox = document.getElementById("spruchBox");
 
-    // Liste aller Animationen (Namen ohne Endung)
+    // Liste aller Animationen (1 bis 20)
     const animationen = [
       "blume", "drehen", "flirten", "gehen", "hallo", 
       "handstand", "herz", "hüpfen", "kreis", "kuss", 
@@ -120,7 +116,7 @@
       "Du schaffst das",
       "Glaub an dich",
       "Vertrau auf dein Bauchgefühl",
-      "Du bist stärker",
+      "Du bist stärkst",
       "Bleib dir treu",
       "Lade Scheli heute auf einen Kaffee ein",
       "Du packst das",
@@ -181,22 +177,25 @@
       "Wer nicht wagt, der nicht gewinnt"
     ];
 
-    function animationStarten() {
-      // Zufälliges Video/Audio auswählen
-      const zufallsIndexAnim = Math.floor(Math.random() * animationen.length);
-      const wahl = animationen[zufallsIndexAnim];
+    // Zähler für geordnete Reihenfolge
+    let animIndex = 0;
+    let spruchIndex = 0;
 
-      // Zufälligen Spruch auswählen
-      const zufallsIndexSpruch = Math.floor(Math.random() * sprueche.length);
-      const spruch = sprueche[zufallsIndexSpruch];
+    function animationStarten() {
+      // Aktuelles Video/Audio und Spruch aus den Listen holen
+      const wahl = animationen[animIndex];
+      const spruch = sprueche[spruchIndex];
+
+      // Zähler für den nächsten Klick hochzählen (und am Ende wieder bei 0 anfangen)
+      animIndex = (animIndex + 1) % animationen.length;
+      spruchIndex = (spruchIndex + 1) % sprueche.length;
 
       // Quellen setzen
       video.src = `Monster_${wahl}.mp4`;
       audio.src = `Monster_${wahl}.mp3`;
 
-      // Spruch anzeigen
+      // Spruch oben eintragen
       spruchBox.textContent = spruch;
-      spruchBox.style.opacity = "1";
 
       // Bild verstecken, Video einblenden
       bild.style.display = "none";
@@ -216,7 +215,7 @@
       }
       if (playAudio !== undefined) {
         playAudio.catch(() => {
-          // Falls Audio blockiert wird, läuft das Video trotzdem stumm weiter
+          // Falls Audio vom Browser geblockt wird
         });
       }
     }
@@ -226,12 +225,11 @@
       bild.style.display = "block";
       video.currentTime = 0;
       audio.currentTime = 0;
-      // Spruch nach Ende des Videos langsam ausblenden (optional, hier bleibt er bis zum nächsten Klick stehen oder blendet aus)
     }
 
     bild.addEventListener("click", animationStarten);
 
-    // Wenn das Video zu Ende ist, zurück zum JPG
+    // Wenn das Video vorbei ist, wieder das JPG zeigen
     video.addEventListener("ended", function () {
       resetAnsicht();
     });
