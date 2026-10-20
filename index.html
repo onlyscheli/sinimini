@@ -178,24 +178,69 @@
     ];
 
     // Zähler für geordnete Reihenfolge
-    let animIndex = 0;
-    let spruchIndex = 0;
+    let animIndex = parseInt(localStorage.getItem("monster_animIndex")) || 0;
+    let spruchIndex = parseInt(localStorage.getItem("monster_spruchIndex")) || 0;
+
+    // Funktion um das heutige Datum als String (YYYY-MM-DD) zu bekommen
+    function getHeuteDatum() {
+      const d = new Date();
+      return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    }
+
+    // Funktion um die Anzahl der heutigen Klicks abzurufen
+    function getTagesKlicks() {
+      const heute = getHeuteDatum();
+      const gespeichertDatum = localStorage.getItem("monster_datum");
+      
+      // Wenn ein neuer Tag angebrochen ist, Zähler zurücksetzen
+      if (gespeichertDatum !== heute) {
+        localStorage.setItem("monster_datum", heute);
+        localStorage.setItem("monster_klicks", "0");
+        return 0;
+      }
+      
+      return parseInt(localStorage.getItem("monster_klicks")) || 0;
+    }
+
+    function klickErhoehen() {
+      const klicks = getTagesKlicks() + 1;
+      localStorage.setItem("monster_klicks", klicks.toString());
+      return klicks;
+    }
 
     function animationStarten() {
-      // Aktuelles Video/Audio und Spruch aus den Listen holen
-      const wahl = animationen[animIndex];
-      const spruch = sprueche[spruchIndex];
+      const klicksHeute = klickErhoehen();
 
-      // Zähler für den nächsten Klick hochzählen (und am Ende wieder bei 0 anfangen)
-      animIndex = (animIndex + 1) % animationen.length;
-      spruchIndex = (spruchIndex + 1) % sprueche.length;
+      let videoDatei = "";
+      let audioDatei = "";
+      let spruchText = "";
+
+      // Falls heute noch weniger als 4 Klicks (d.h. beim 1., 2. und 3. Mal)
+      if (klicksHeute <= 3) {
+        const wahl = animationen[animIndex];
+        spruchText = sprueche[spruchIndex];
+
+        // Zähler für den nächsten Klick hochzählen und speichern
+        animIndex = (animIndex + 1) % animationen.length;
+        spruchIndex = (spruchIndex + 1) % sprueche.length;
+        localStorage.setItem("monster_animIndex", animIndex);
+        localStorage.setItem("monster_spruchIndex", spruchIndex);
+
+        videoDatei = `Monster_${wahl}.mp4`;
+        audioDatei = `Monster_${wahl}.mp3`;
+      } else {
+        // Ab dem 4. Mal am selben Tag: Monster schläft
+        videoDatei = "Monster_schlafen.mp4";
+        audioDatei = "Monster_schlafen.mp3";
+        spruchText = "Ich bin müde. Komm morgen wieder.";
+      }
 
       // Quellen setzen
-      video.src = `Monster_${wahl}.mp4`;
-      audio.src = `Monster_${wahl}.mp3`;
+      video.src = videoDatei;
+      audio.src = audioDatei;
 
       // Spruch oben eintragen
-      spruchBox.textContent = spruch;
+      spruchBox.textContent = spruchText;
 
       // Bild verstecken, Video einblenden
       bild.style.display = "none";
