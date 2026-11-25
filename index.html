@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sini-Minis Geburtstags-Glücksrad</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 10px 12px;
+    min-height: 100dvh;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+    background: linear-gradient(
+        135deg,
+        #ff1493,
+        #c71585,
+        #8a2be2,
+        #ff69b4
+    );
+    background-size: 300% 300%;
+    animation: backgroundMove 8s ease infinite;
+    overflow-x: hidden;
+}
+
+@keyframes backgroundMove {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.main {
+    max-width: 500px;
+    margin: auto;
+}
+
+.party {
+    font-size: 30px;
+    margin: 2px 0;
+}
+
+h1 {
+    font-size: clamp(25px, 7vw, 42px);
+    line-height: 1.1;
+    margin: 8px 0;
+    color: white;
+    text-shadow:
+        0 3px 0 #b50079,
+        0 0 20px #ffb9ec;
+}
+
+.name {
+    display: inline-block;
+    color: #fff45c;
+    font-size: 1.2em;
+    margin-top: 4px;
+    text-shadow:
+        0 3px 0 #ff5c00,
+        0 0 20px #ffdd00;
+}
+
+.subtitle {
+    font-size: 15px;
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+h2 {
+    font-size: 19px;
+    margin: 10px 0 4px;
+}
+
+.wheel-container {
+    position: relative;
+    width: min(85vw, 43vh, 390px);
+    width: min(85vw, 43dvh, 390px);
+    margin: 22px auto 18px;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 6px solid white;
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 5px #ff42bf,
+        0 0 20px white,
+        0 0 45px #ff9ae8;
+}
+
+.pointer {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 38px solid #fff600;
+    filter: drop-shadow(0 3px 3px #a30070);
+    z-index: 5;
+}
+
+button {
+    width: min(90%, 350px);
+    border: 3px solid white;
+    border-radius: 50px;
+    padding: 14px 12px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #9c0063;
+    background: linear-gradient(
+        135deg, #fff600, #ffb52c
+    );
+    box-shadow:
+        0 5px 0 #b50079,
+        0 0 25px #ffea0088;
+    cursor: pointer;
+    touch-action: manipulation;
+    animation: pulse 1.8s infinite;
+}
+
+button:disabled {
+    opacity: 0.8;
+    animation: none;
+    font-size: 16px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}
+
+#status {
+    font-size: 14px;
+    min-height: 18px;
+    margin: 12px 0 5px;
+}
+
+#result {
+    display: none;
+    max-width: 430px;
+    margin: 22px auto;
+    padding: 22px 15px;
+    border: 3px solid white;
+    border-radius: 25px;
+    background: linear-gradient(
+        135deg, #ff9edb, #ff42a1, #ae35ff
+    );
+    box-shadow: 0 0 30px #ffb5ec;
+    animation: appear 0.5s ease;
+}
+
+.beer {
+    font-size: 85px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+#result h2 {
+    color: #fff600;
+    font-size: 38px;
+    margin: 5px 0;
+    text-shadow: 0 3px 0 #e00085;
+}
+
+#result h3 {
+    font-size: 25px;
+    margin: 12px 0;
+}
+
+.voucher {
+    border: 3px dashed #ff1493;
+    padding: 18px 10px;
+    margin-top: 20px;
+    border-radius: 18px;
+    line-height: 1.8;
+    background: #fff0fa;
+    color: #b00070;
+}
+
+.signature {
+    font-size: 27px;
+    font-weight: bold;
+    font-style: italic;
+    color: #fff600;
+}
+
+footer {
+    margin: 22px 0 10px;
+    color: #ffd6f0;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.confetti {
+    position: fixed;
+    top: -40px;
+    pointer-events: none;
+    z-index: 100;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(115vh) rotate(900deg);
+    }
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-height: 650px) {
+
+    .party {
+        font-size: 23px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        margin: 5px 0;
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+
+    .wheel-container {
+        margin: 17px auto 13px;
+        width: min(78vw, 40dvh, 340px);
+    }
+
+    button {
+        padding: 11px;
+        font-size: 17px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="main">
+
+    <div class="party">🩷 🎈 🎂 🎈 🩷</div>
+
+    <h1>
+        Alles Gute zum Geburtstag!<br>
+        <span class="name">Sini-Mini</span>
+    </h1>
+
+    <p class="subtitle">
+        Heute ist dein Glückstag! 🥳<br>
+        Ein Dreh könnte dein Leben verändern!
+    </p>
+
+    <h2>✨ Dein Geburtstags-Glücksrad ✨</h2>
+
+    <div class="wheel-container">
+        <div class="pointer" id="pointer"></div>
+        <canvas id="wheel" width="800" height="800"></canvas>
+    </div>
+
+    <button id="spinButton" onclick="spin()">
+        🍀 Dreh dein Glück!
+    </button>
+
+    <p id="status" aria-live="polite">
+        Traust du dich? 😏
+    </p>
+
+    <div id="result">
+
+        <div class="beer">🍺</div>
+
+        <h2>JACKPOT!</h2>
+
+        <h3>Du hast 1 Bier gewonnen!</h3>
+
+        <p id="joke">
+            Schade, fast wäre es das Cabrio geworden.<br>
+            Aber man kann ja nicht alles haben. 😂
+        </p>
+
+        <div class="voucher">
+
+            🎀 <strong>OFFIZIELLER GUTSCHEIN</strong> 🎀
+
+            <br><br>
+
+            Für: <strong>Sini-Mini</strong><br>
+
+            Gewinn:<br>
+
+            <strong style="font-size:25px">
+                1 eiskaltes Bier 🍺
+            </strong>
+
+            <br><br>
+
+            Einlösbar bei: <strong>Scheli</strong><br>
+
+            Gültig: Bis wir Durst haben.
+
+        </div>
+
+        <p>
+            Alles Liebe zum Geburtstag! 🩷<br>
+            Bleib so, wie du bist!
+        </p>
+
+        <p class="signature">Scheli</p>
+
+    </div>
+
+    <footer>
+        © Schelis Geburtstags-Gewinnspiel<br>
+        Der Rechtsweg ist ausgeschlossen. 😉
+    </footer>
+
+</div>
+
+<script>
+
+// =====================================
+// GEWINNE
+// =====================================
+
+const prizes = [
+    { icon: "🍺", lines: ["1 BIER"] },
+    { icon: "🏍️", lines: ["Motorrad"] },
+    { icon: "🚘", lines: ["Cabrio"] },
+    { icon: "🏝️", lines: ["Malediven", "Urlaub"] },
+    { icon: "💶", lines: ["10.000 €", "Cash"] },
+    { icon: "🏠", lines: ["Villa", "am Meer"] },
+    { icon: "⌚", lines: ["Rolex"] },
+    { icon: "🛥️", lines: ["Luxus", "Yacht"] }
+];
+
+const colors = [
+    "#ffb800",
+    "#ff1493",
+    "#00a8ff",
+    "#00c987",
+    "#ff4757",
+    "#a855f7",
+    "#ff65c3",
+    "#ff7800"
+];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+const center = 400;
+const radius = 400;
+const slice = 2 * Math.PI / prizes.length;
+
+let rotation = 270;
+let spinning = false;
+let attempts = 0;
+
+
+// =====================================
+// SOUND SYSTEM
+// Keine externen Audiodateien notwendig
+// =====================================
+
+let audioCtx = null;
+let masterGain = null;
+
+function initAudio() {
+
+    try {
+
+        if (!audioCtx) {
+
+            const AudioContext =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+            if (!AudioContext) return;
+
+            audioCtx = new AudioContext();
+
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.45;
+
+            const compressor =
+                audioCtx.createDynamicsCompressor();
+
+            masterGain.connect(compressor);
+            compressor.connect(audioCtx.destination);
+        }
+
+        if (audioCtx.state === "suspended") {
+            audioCtx.resume().catch(() => {});
+        }
+
+    } catch (error) {
+        // Das Glücksrad funktioniert auch ohne Ton.
+    }
+}
+
+function tone(
+    frequency,
+    duration,
+    type = "sine",
+    volume = 0.15,
+    delay = 0,
+    endFrequency = null
+) {
+
+    if (!audioCtx || audioCtx.state !== "running") return;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    const start = audioCtx.currentTime + delay;
+
+    osc.type = type;
+
+    osc.frequency.setValueAtTime(
+        frequency, start
+    );
+
+    if (endFrequency !== null) {
+
+        osc.frequency.exponentialRampToValueAtTime(
+            endFrequency,
+            start + duration
+        );
+    }
+
+    gain.gain.setValueAtTime(0.001, start);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        start + 0.008
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        start + duration
+    );
+
+    osc.connect(gain);
+    gain.connect(masterGain);
+
+    osc.start(start);
+    osc.stop(start + duration + 0.01);
+}
+
+
+// Klackern des Glücksrads
+
+function tickSound() {
+
+    tone(
+        950 + Math.random() * 250,
+        0.035,
+        "triangle",
+        0.3,
+        0,
+        180
+    );
+}
+
+
+// Trommelgeräusch
+
+function drumSound(delay, volume) {
+
+    if (!audioCtx || audioCtx.state !== "running") return;
+
+    const duration = 0.07;
+
+    const buffer = audioCtx.createBuffer(
+        1,
+        Math.floor(audioCtx.sampleRate * duration),
+        audioCtx.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < data.length; i++) {
+
+        data[i] =
+            (Math.random() * 2 - 1) *
+            Math.pow(1 - i / data.length, 2);
+    }
+
+    const source = audioCtx.createBufferSource();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
+    source.buffer = buffer;
+
+    filter.type = "bandpass";
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.7;
+
+    gain.gain.value = volume;
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    source.start(audioCtx.currentTime + delay);
+}
+
+
+// Spannender Trommelwirbel
+
+function drumRoll() {
+
+    for (let i = 0; i < 20; i++) {
+
+        drumSound(
+            i * 0.075,
+            0.12 + i * 0.018
+        );
+    }
+}
+
+
+// Übertriebene Jackpot-Fanfare
+
+function jackpotSound() {
+
+    const melody = [
+        [523.25, 0.15, 0.00],
+        [659.25, 0.15, 0.16],
+        [783.99, 0.15, 0.32],
+        [1046.50, 0.35, 0.48],
+        [783.99, 0.15, 0.86],
+        [1046.50, 0.65, 1.02]
+    ];
+
+    melody.forEach(note => {
+
+        tone(
+            note[0],
+            note[1],
+            "triangle",
+            0.3,
+            note[2]
+        );
+
+        tone(
+            note[0] / 2,
+            note[1],
+            "sine",
+            0.12,
+            note[2]
+        );
+    });
+
+    // Triumphaler Schlussakkord
+
+    [523.25, 659.25, 783.99, 1046.50]
+        .forEach(frequency => {
+
+            tone(
+                frequency,
+                0.9,
+                "triangle",
+                0.12,
+                1.7
+            );
+        });
+
+    // Funkelnde Casino-Töne
+
+    for (let i = 0; i < 12; i++) {
+
+        tone(
+            1100 + Math.random() * 1500,
+            0.12,
+            "sine",
+            0.07,
+            0.5 + i * 0.13
+        );
+    }
+
+    // Lustiger Bier-Plopp
+
+    tone(
+        650,
+        0.18,
+        "sine",
+        0.4,
+        2.7,
+        90
+    );
+
+    tone(
+        150,
+        0.1,
+        "triangle",
+        0.2,
+        2.75,
+        60
+    );
+}
+
+
+// =====================================
+// GLÜCKSRAD ZEICHNEN
+// =====================================
+
+function drawWheel() {
+
+    prizes.forEach((prize, i) => {
+
+        const angle = i * slice - Math.PI / 2;
+        const start = angle - slice / 2;
+        const end = angle + slice / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, start, end);
+        ctx.closePath();
+
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(angle + Math.PI / 2);
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+
+        ctx.shadowColor = "#00000066";
+        ctx.shadowBlur = 5;
+
+        ctx.font = "75px Arial";
+        ctx.fillText(prize.icon, 0, -290);
+
+        ctx.font = "bold 35px Arial";
+
+        prize.lines.forEach((line, j) => {
+
+            ctx.fillText(
+                line,
+                0,
+                -230 + j * 39
+            );
+        });
+
+        ctx.restore();
+    });
+
+
+    // Dekorative Lichter am Rand
+
+    for (let i = 0; i < 32; i++) {
+
+        const angle = i * Math.PI * 2 / 32;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            center + Math.cos(angle) * 382,
+            center + Math.sin(angle) * 382,
+            6, 0, Math.PI * 2
+        );
+
+        ctx.fillStyle = i % 2 === 0
+            ? "#ffffff"
+            : "#fff600";
+
+        ctx.fill();
+    }
+
+
+    // Pinke Mitte
+
+    ctx.beginPath();
+
+    ctx.arc(
+        center, center, 76,
+        0, Math.PI * 2
+    );
+
+    const gradient = ctx.createRadialGradient(
+        center, center, 5,
+        center, center, 76
+    );
+
+    gradient.addColorStop(0, "#ffb6e9");
+    gradient.addColorStop(1, "#ff008c");
+
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 8;
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText("SINI", center, center - 5);
+    ctx.fillText("MINI", center, center + 27);
+}
+
+drawWheel();
+
+// Beim Öffnen steht das Rad auf Cabrio.
+
+canvas.style.transform = `rotate(${rotation}deg)`;
+
+
+// =====================================
+// GLÜCKSRAD DREHEN
+// =====================================
+
+function spin() {
+
+    if (spinning) return;
+
+    initAudio();
+
+    spinning = true;
+    attempts++;
+
+    const button =
+        document.getElementById("spinButton");
+
+    const status =
+        document.getElementById("status");
+
+    const result =
+        document.getElementById("result");
+
+    const pointer =
+        document.getElementById("pointer");
+
+    button.disabled = true;
+
+    button.innerText =
+        "✨ Das Schicksal entscheidet ...";
+
+    result.style.display = "none";
+
+    status.innerText =
+        "Ohhh ... vielleicht wird es das Cabrio! 👀";
+
+    // Das Rad landet IMMER exakt auf dem Bier.
+
+    const rounds = 5 + Math.floor(Math.random() * 3);
+
+    const startRotation = rotation;
+
+    const targetRotation =
+        Math.ceil(rotation / 360) * 360
+        + rounds * 360;
+
+    const distance =
+        targetRotation - startRotation;
+
+    const duration = 6500;
+
+    const startTime = performance.now();
+
+    let lastSegment =
+        Math.floor((startRotation + 22.5) / 45);
+
+    let lastTickTime = 0;
+
+    let drumStarted = false;
+
+    let stage = 0;
+
+    function animate(now) {
+
+        const elapsed = now - startTime;
+
+        const progress =
+            Math.min(elapsed / duration, 1);
+
+        // Schneller Start, langsames Ausrollen.
+
+        const eased =
+            1 - Math.pow(1 - progress, 3);
+
+        rotation =
+            startRotation + distance * eased;
+
+        canvas.style.transform =
+            `rotate(${rotation}deg)`;
+
+
+        // Synchrones Klackern bei jedem Feldwechsel.
+
+        const currentSegment =
+            Math.floor((rotation + 22.5) / 45);
+
+        if (currentSegment !== lastSegment) {
+
+            if (now - lastTickTime > 35) {
+
+                tickSound();
+
+                lastTickTime = now;
+            }
+
+            lastSegment = currentSegment;
+
+            if (pointer.animate) {
+
+                pointer.animate(
+                    [
+                        {
+                            transform:
+                            "translateX(-50%) rotate(-12deg)"
+                        },
+                        {
+                            transform:
+                            "translateX(-50%) rotate(0deg)"
+                        }
+                    ],
+                    { duration: 100 }
+                );
+            }
+        }
+
+
+        // Spannungsaufbau
+
+        if (elapsed > 2500 && stage === 0) {
+
+            status.innerText =
+                "Oh mein Gott, wie spannend! 😱";
+
+            stage = 1;
+        }
+
+        if (elapsed > 4500 && stage === 1) {
+
+            status.innerText =
+                "Sini-Mini, mach dich bereit! 🤩";
+
+            stage = 2;
+        }
+
+
+        // Trommelwirbel kurz vor dem Gewinn
+
+        if (elapsed > 4900 && !drumStarted) {
+
+            drumStarted = true;
+
+            drumRoll();
+        }
+
+
+        if (progress < 1) {
+
+            requestAnimationFrame(animate);
+
+        } else {
+
+            rotation = targetRotation;
+
+            canvas.style.transform =
+                `rotate(${rotation}deg)`;
+
+            showResult();
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+
+// =====================================
+// GEWINN ANZEIGEN
+// =====================================
+
+function showResult() {
+
+    const button =
+        document.getElementById("spinButton");
+
+    const status =
+        document.getElementById("status");
+
+    const result =
+        document.getElementById("result");
+
+    const joke =
+        document.getElementById("joke");
+
+    button.innerText = "🎉 JACKPOT!";
+
+    result.style.display = "block";
+
+    if (attempts === 1) {
+
+        status.innerText =
+            "Herzlichen Glückwunsch! 🎉";
+
+        joke.innerHTML =
+            "Schade, fast wäre es das Cabrio geworden.<br>" +
+            "Aber man kann ja nicht alles haben. 😂";
+
+    } else if (attempts === 2) {
+
+        status.innerText =
+            "Schon wieder Bier? 😂";
+
+        joke.innerHTML =
+            "Was für ein unglaublicher Zufall!<br>" +
+            "Schon wieder ein Bier!";
+
+    } else if (attempts === 3) {
+
+        status.innerText =
+            "Das gibt's doch nicht! 🤣";
+
+        joke.innerHTML =
+            "Sini-Mini, vergiss das Motorrad.<br>" +
+            "Du bist offenbar fürs Bier bestimmt.";
+
+    } else if (attempts === 4) {
+
+        status.innerText =
+            "Du gibst wohl nicht auf? 😏";
+
+        joke.innerHTML =
+            "Die Malediven müssen leider warten.<br>" +
+            "Bier ist auch Urlaub. Für die Seele.";
+
+    } else if (attempts === 5) {
+
+        status.innerText =
+            "Das Rad mag dich einfach! 🩷";
+
+        joke.innerHTML =
+            "Andere gewinnen Millionen.<br>" +
+            "Du gewinnst flüssiges Gold. 🍺";
+
+    } else {
+
+        status.innerText =
+            "Akzeptiere dein Schicksal. 🍺";
+
+        joke.innerHTML =
+            "Du kannst noch 100 Mal drehen.<br>" +
+            "Scheli kauft dir trotzdem kein Cabrio. 😂<br><br>" +
+            "Und nein, die Biere werden nicht addiert!";
+    }
+
+
+    // Sound und Konfetti
+
+    jackpotSound();
+
+    confetti();
+
+
+    // Automatisch zum Gewinn scrollen
+
+    setTimeout(() => {
+
+        result.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }, 400);
+
+
+    // Erneutes Drehen nach der Fanfare
+
+    setTimeout(() => {
+
+        spinning = false;
+
+        button.disabled = false;
+
+        button.innerText =
+            "🔄 Nochmal versuchen";
+
+    }, 3000);
+}
+
+
+// =====================================
+// KONFETTI
+// =====================================
+
+function confetti() {
+
+    const emojis = [
+        "🎉", "✨", "🍺", "🎊",
+        "🩷", "💖", "⭐", "🌸",
+        "💗", "🥳", "🎀"
+    ];
+
+    for (let i = 0; i < 100; i++) {
+
+        const piece =
+            document.createElement("div");
+
+        piece.className = "confetti";
+
+        piece.innerText =
+            emojis[Math.floor(
+                Math.random() * emojis.length
+            )];
+
+        piece.style.left =
+            Math.random() * 100 + "vw";
+
+        piece.style.fontSize =
+            12 + Math.random() * 25 + "px";
+
+        piece.style.animationDuration =
+            2 + Math.random() * 3 + "s";
+
+        piece.style.animationDelay =
+            Math.random() * 1.5 + "s";
+
+        document.body.appendChild(piece);
+
+        setTimeout(() => piece.remove(), 7000);
+    }
+}
+
+</script>
+
+</body>
+</html>
